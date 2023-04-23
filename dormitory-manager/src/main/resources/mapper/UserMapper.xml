@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.city.manager.dao.mapper.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.city.manager.dao.entity.User">
+        <id column="id" property="id" />
+        <result column="dormitoryId" property="dormitoryId" />
+        <result column="sex" property="sex"/>
+        <result column="name" property="name"/>
+        <result column="password" property="password"/>
+        <result column="majorId" property="majorId"/>
+    </resultMap>
+
+    <!--通用查询结果-->
+    <sql id="Base_Column_List">
+        id, dormitoryId, name, password, majorId, sex
+    </sql>
+
+    <!--条件查询用户信息-->
+    <select id="searchUsers" resultType="com.city.manager.common.vo.UserVo">
+        SELECT
+            u.id,
+            u.`name`,
+            u.sex,
+            m.`name` AS major,
+            r.`name` AS room,
+            b.`name` AS building,
+            g.score
+        FROM
+            `user` u LEFT JOIN major m ON u.majorId = m.id
+            LEFT JOIN dormitory d ON u.dormitoryId = d.id
+            LEFT JOIN building b ON d.buildingId = b.id
+            LEFT JOIN  room r ON d.roomId = r.id
+            LEFT JOIN grade g ON d.gradeId = g.id
+        WHERE
+            1 = 1
+        <if test="username!=null and username!=0">
+        AND
+            u.id = #{username}
+        </if>
+
+        <if test="buildingId!=null and buildingId!=0">
+        AND
+            b.id = #{buildingId}
+        </if>
+
+        <if test="roomId!=null and roomId!=0">
+        AND
+            r.id = #{roomId}
+        </if>
+
+        <if test="majorId!=null and majorId!=0">
+        AND
+            m.id = #{majorId}
+        </if>
+
+    </select>
+
+
+
+
+</mapper>

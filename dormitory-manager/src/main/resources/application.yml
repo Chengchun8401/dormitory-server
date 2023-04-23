@@ -1,0 +1,27 @@
+server:
+  port: 5453
+
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://localhost:3306/dor?useSSL=false&characterEncoding=utf8&serverTimezone=GMT%2B8
+      username: root
+      password: root
+      # 最小空闲连接数
+      min-idle: 5
+      # 最大连接数
+      max-active: 10
+      # 连接请求超时时间
+      max-wait: 3000
+      # 测试连接是否可用的查询语句
+      validation-query: SELECT 1
+
+  redis:
+    port: 6379
+    host: localhost
+    password: root
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: false

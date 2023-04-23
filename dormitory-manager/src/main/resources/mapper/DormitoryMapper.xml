@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.city.manager.dao.mapper.DormitoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.city.manager.dao.entity.Dormitory">
+        <id column="id" property="id" />
+        <result column="buildingId" property="buildingId" />
+        <result column="baseId" property="baseId" />
+        <result column="roomId" property="roomId"/>
+        <result column="waterId" property="waterId"/>
+        <result column="powerId" property="powerId"/>
+        <result column="gradeId" property="gradeId"/>
+    </resultMap>
+
+    <!--通用查询结果-->
+    <sql id="Base_Column_List">
+        id, buildingId, baseId, roomId, waterId, powerId, gradeId
+    </sql>
+
+    <!--获取所有楼栋信息-->
+    <select id="getDorBuilding" resultType="com.city.manager.common.vo.BuildingVo">
+        SELECT
+            b.id,
+            b.`name`
+        FROM
+            building as b
+    </select>
+
+    <!--获取楼栋下的寝室-->
+    <select id="getBuildingRooms" resultType="com.city.manager.dao.entity.Room">
+        SELECT
+            r.id,
+            r.`name`
+        FROM
+            room r
+        WHERE
+            r.buildingId = #{id}
+        ORDER BY
+            r.`name`
+    </select>
+
+    <!--获取寝室信息-->
+    <select id="getDormitoryInfo" resultType="com.city.manager.common.vo.DormitoryVo">
+        SELECT
+            d.id,
+            b.`name` as building,
+            r.`name` as room,
+            g.score,
+            p.cost as powerRate,
+            w.cost as waterRate,
+            COUNT(u.id) as member
+        FROM
+            dormitory d
+            LEFT JOIN building b ON d.buildingId = b.id
+            LEFT JOIN room r ON d.roomId = r.id
+            LEFT JOIN grade g ON d.gradeId = g.id
+            LEFT JOIN power_rate p ON d.powerId = p.id
+            LEFT JOIN water_rate w ON d.waterId = w.id
+            LEFT JOIN `user` u ON u.dormitoryId = d.id
+        WHERE
+            1 = 1
+
+        <if test="buildingId!=null and buildingId!=0">
+        AND
+            b.id = #{buildingId}
+        </if>
+
+        <if test="roomId!=null and roomId!=0">
+        AND
+            r.id = #{roomId}
+        </if>
+
+        <if test="powerArrears!=null and powerArrears!=0">
+        AND
+            p.cost &lt; 0
+        </if>
+
+        <if test="waterArrears!=null and waterArrears!=0">
+        AND
+            w.cost &lt; 0
+        </if>
+
+        GROUP BY
+            d.id
+    </select>
+
+</mapper>

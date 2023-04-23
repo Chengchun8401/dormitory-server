@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.city.manager.dao.mapper.WorkOrderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.city.manager.dao.entity.WorkOrder">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="content" property="content"/>
+        <result column="userId" property="userId"/>
+        <result column="typeId" property="typeId"/>
+        <result column="commitTime" property="commitTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <!--通用查询结果-->
+    <sql id="Base_Column_List">
+        id, title, content, userId, commitTime, status, typeId
+    </sql>
+
+    <!--条件查询工单信息-->
+    <select id="getWorkOrderList" resultType="com.city.manager.common.vo.WorkOrderVo">
+        SELECT
+            o.id,
+            o.title,
+            o.content,
+            o.commitTime,
+            o.`status`,
+            u.`name` AS `user`,
+            t.type,
+            a.nickname as admin
+        FROM
+            work_order o
+            LEFT JOIN order_type t ON o.typeId = t.id
+            LEFT JOIN `user` u ON o.userId = u.id
+            LEFT JOIN admin a ON o.adminId = a.id
+        WHERE
+            1 = 1
+
+        <if test="typeId!=null and typeId!=0">
+        AND
+            o.typeId = #{typeId}
+        </if>
+
+        <if test="status!=null">
+        AND
+            o.status = #{status}
+        </if>
+
+    </select>
+
+    <!--获取工单类型-->
+    <select id="getWorkOrderType" resultType="com.city.manager.dao.entity.OrderType">
+        SELECT
+            *
+        FROM
+            order_type
+    </select>
+
+
+
+</mapper>
